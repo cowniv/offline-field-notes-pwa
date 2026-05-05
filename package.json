@@ -10,3 +10,9 @@
     "lint": "biome lint .",
     "preview": "vite preview",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "idb": "^8.0.1",
+    "react": "^18.3.1",
