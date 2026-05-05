@@ -1,0 +1,6 @@
+{
+  "name": "offline-field-notes-pwa",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
