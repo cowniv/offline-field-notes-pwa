@@ -4,3 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "dev": "vite",
+    "server": "tsx server/index.ts",
+    "build": "tsc -b && vite build",
+    "lint": "biome lint .",
+    "preview": "vite preview",
+    "test": "vitest run"
