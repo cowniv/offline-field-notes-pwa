@@ -83,3 +83,129 @@ export default function App() {
     if (navigator.onLine) sync();
   }
 
+  async function keepLost(c: Conflict) {
+    const current = notes.find((n) => n.id === c.noteId);
+    await saveLocalEdit({
+      ...(current ?? { syncedAt: 0 }),
+      ...c.lost,
+      deleted: false,
+      updatedAt: Date.now(),
+    } as LocalNote);
+    await removeConflict(c.id);
+    await refresh();
+    sync();
+  }
+
+  async function dismiss(c: Conflict) {
+    await removeConflict(c.id);
+    await refresh();
+  }
+
+  const q = query.trim().toLowerCase();
+  const visible = q
+    ? notes.filter((n) =>
+        `${n.title} ${n.location} ${n.body}`.toLowerCase().includes(q),
+      )
+    : notes;
+
+  return (
+    <div className="mx-auto flex min-h-screen max-w-5xl flex-col">
+      <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b border-stone-200 bg-paper/95 px-4 py-3 backdrop-blur">
+        <h1 className="text-lg font-bold text-forest">Field Notes</h1>
+        <span
+          role="status"
+          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+            online
+              ? "bg-forest-light text-forest"
+              : "bg-amber-100 text-amber-800"
+          }`}
+        >
+          {online ? "● Online" : "○ Offline"}
+        </span>
+        {pending > 0 && (
+          <span className="text-xs text-stone-600">
+            {pending} waiting to sync
+          </span>
+        )}
+        <nav className="ml-auto flex gap-2">
+          <button
+            type="button"
+            className={`btn ${view === "notes" ? "btn-primary" : "btn-ghost"}`}
+            onClick={() => setView("notes")}
+          >
+            Notes
+          </button>
+          <button
+            type="button"
+            className={`btn ${view === "conflicts" ? "btn-primary" : "btn-ghost"}`}
+            onClick={() => setView("conflicts")}
+          >
+            Conflicts{conflicts.length ? ` (${conflicts.length})` : ""}
+          </button>
+        </nav>
+      </header>
+
+      {status && <p className="px-4 pt-2 text-xs text-stone-500">{status}</p>}
+
+      {view === "conflicts" ? (
+        <ConflictsView
+          conflicts={conflicts}
+          onKeepLost={keepLost}
+          onDismiss={dismiss}
+        />
+      ) : (
+        <main className="grid flex-1 gap-4 p-4 md:grid-cols-[280px_1fr]">
+          <aside className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="btn btn-primary flex-1"
+                onClick={() => setSelected(newNote())}
+              >
+                + New note
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={sync}
+                disabled={!online}
+                title="Sync now"
+              >
+                ⟳
+              </button>
+            </div>
+            <input
+              className="input"
+              placeholder="Search notes"
+              aria-label="Search notes"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <ul className="flex flex-col gap-1.5">
+              {visible.map((n) => {
+                const done = n.checklist.filter((c) => c.done).length;
+                return (
+                  <li key={n.id}>
+                    <button
+                      type="button"
+                      onClick={() => setSelected(n)}
+                      className={`w-full rounded-lg border px-3 py-2 text-left text-sm ${
+                        selected?.id === n.id
+                          ? "border-forest bg-forest-light"
+                          : "border-stone-200 bg-white hover:border-stone-300"
+                      }`}
+                    >
+                      <span className="block truncate font-medium">
+                        {n.title || "Untitled"}
+                      </span>
+                      <span className="block truncate text-xs text-stone-500">
+                        {n.location || "No location"}
+                        {n.checklist.length > 0 &&
+                          ` · ${done}/${n.checklist.length}`}
+                        {n.photo && " · 📷"}
+                        {n.syncedAt < n.updatedAt && " · unsynced"}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
