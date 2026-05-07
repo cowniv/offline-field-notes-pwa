@@ -4,3 +4,9 @@
     "includes": [
       "src/**",
       "server/**",
+      "public/**",
+      "*.{js,ts,json,html}",
+      "!package-lock.json",
+      "!dist",
+      "!dev-dist",
+      "!node_modules"
