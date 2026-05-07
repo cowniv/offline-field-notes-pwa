@@ -83,3 +83,45 @@ export default function App() {
     if (navigator.onLine) sync();
   }
 
+  async function keepLost(c: Conflict) {
+    const current = notes.find((n) => n.id === c.noteId);
+    await saveLocalEdit({
+      ...(current ?? { syncedAt: 0 }),
+      ...c.lost,
+      deleted: false,
+      updatedAt: Date.now(),
+    } as LocalNote);
+    await removeConflict(c.id);
+    await refresh();
+    sync();
+  }
+
+  async function dismiss(c: Conflict) {
+    await removeConflict(c.id);
+    await refresh();
+  }
+
+  const q = query.trim().toLowerCase();
+  const visible = q
+    ? notes.filter((n) =>
+        `${n.title} ${n.location} ${n.body}`.toLowerCase().includes(q),
+      )
+    : notes;
+
+  return (
+    <div className="mx-auto flex min-h-screen max-w-5xl flex-col">
+      <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b border-stone-200 bg-paper/95 px-4 py-3 backdrop-blur">
+        <h1 className="text-lg font-bold text-forest">Field Notes</h1>
+        <span
+          role="status"
+          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+            online
+              ? "bg-forest-light text-forest"
+              : "bg-amber-100 text-amber-800"
+          }`}
+        >
+          {online ? "● Online" : "○ Offline"}
+        </span>
+        {pending > 0 && (
+          <span className="text-xs text-stone-600">
+            {pending} waiting to sync
