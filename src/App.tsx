@@ -209,3 +209,45 @@ export default function App() {
                   </li>
                 );
               })}
+              {visible.length === 0 && (
+                <li className="text-sm text-stone-500">No notes yet.</li>
+              )}
+            </ul>
+            <div className="mt-auto flex gap-2 pt-4">
+              <button
+                type="button"
+                className="btn btn-ghost flex-1"
+                onClick={() => exportJSON(notes)}
+                disabled={!notes.length}
+              >
+                Export JSON
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost flex-1"
+                onClick={() => exportCSV(notes)}
+                disabled={!notes.length}
+              >
+                Export CSV
+              </button>
+            </div>
+          </aside>
+          <section>
+            {selected ? (
+              <NoteEditor
+                key={selected.id + selected.updatedAt}
+                note={selected}
+                onSave={save}
+              />
+            ) : (
+              <div className="grid h-full place-items-center rounded-xl border border-dashed border-stone-300 p-10 text-center text-sm text-stone-500">
+                Pick a note or start a new one. Everything saves to this device
+                first, so it works with no signal.
+              </div>
+            )}
+          </section>
+        </main>
+      )}
+    </div>
+  );
+}
