@@ -125,3 +125,45 @@ export default function App() {
         {pending > 0 && (
           <span className="text-xs text-stone-600">
             {pending} waiting to sync
+          </span>
+        )}
+        <nav className="ml-auto flex gap-2">
+          <button
+            type="button"
+            className={`btn ${view === "notes" ? "btn-primary" : "btn-ghost"}`}
+            onClick={() => setView("notes")}
+          >
+            Notes
+          </button>
+          <button
+            type="button"
+            className={`btn ${view === "conflicts" ? "btn-primary" : "btn-ghost"}`}
+            onClick={() => setView("conflicts")}
+          >
+            Conflicts{conflicts.length ? ` (${conflicts.length})` : ""}
+          </button>
+        </nav>
+      </header>
+
+      {status && <p className="px-4 pt-2 text-xs text-stone-500">{status}</p>}
+
+      {view === "conflicts" ? (
+        <ConflictsView
+          conflicts={conflicts}
+          onKeepLost={keepLost}
+          onDismiss={dismiss}
+        />
+      ) : (
+        <main className="grid flex-1 gap-4 p-4 md:grid-cols-[280px_1fr]">
+          <aside className="flex flex-col gap-3">
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className="btn btn-primary flex-1"
+                onClick={() => setSelected(newNote())}
+              >
+                + New note
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost"
