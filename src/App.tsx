@@ -167,3 +167,45 @@ export default function App() {
               <button
                 type="button"
                 className="btn btn-ghost"
+                onClick={sync}
+                disabled={!online}
+                title="Sync now"
+              >
+                ⟳
+              </button>
+            </div>
+            <input
+              className="input"
+              placeholder="Search notes"
+              aria-label="Search notes"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <ul className="flex flex-col gap-1.5">
+              {visible.map((n) => {
+                const done = n.checklist.filter((c) => c.done).length;
+                return (
+                  <li key={n.id}>
+                    <button
+                      type="button"
+                      onClick={() => setSelected(n)}
+                      className={`w-full rounded-lg border px-3 py-2 text-left text-sm ${
+                        selected?.id === n.id
+                          ? "border-forest bg-forest-light"
+                          : "border-stone-200 bg-white hover:border-stone-300"
+                      }`}
+                    >
+                      <span className="block truncate font-medium">
+                        {n.title || "Untitled"}
+                      </span>
+                      <span className="block truncate text-xs text-stone-500">
+                        {n.location || "No location"}
+                        {n.checklist.length > 0 &&
+                          ` · ${done}/${n.checklist.length}`}
+                        {n.photo && " · 📷"}
+                        {n.syncedAt < n.updatedAt && " · unsynced"}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
