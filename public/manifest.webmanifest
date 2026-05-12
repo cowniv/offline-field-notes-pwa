@@ -2,3 +2,6 @@
   "name": "Field Notes",
   "short_name": "FieldNotes",
   "description": "Offline-first notes and checklists for survey volunteers",
+  "theme_color": "#14532d",
+  "background_color": "#f7f7f2",
+  "display": "standalone",
