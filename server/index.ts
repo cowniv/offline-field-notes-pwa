@@ -18,3 +18,23 @@ interface ServerConflict {
   noteId: string;
   overwritten: Note;
   at: number;
+}
+
+if (existsSync(".env")) process.loadEnvFile(".env");
+
+const DATA_FILE = fileURLToPath(new URL("./data.json", import.meta.url));
+const PORT = Number(process.env.PORT ?? 4300);
+const TOKEN = process.env.SYNC_TOKEN ?? "";
+
+let state: {
+  rev: number;
+  notes: Record<string, Stored>;
+  conflicts: ServerConflict[];
+} = {
+  rev: 0,
+  notes: {},
+  conflicts: [],
+};
+if (existsSync(DATA_FILE)) state = JSON.parse(readFileSync(DATA_FILE, "utf8"));
+const persist = () => writeFileSync(DATA_FILE, JSON.stringify(state, null, 2));
+
