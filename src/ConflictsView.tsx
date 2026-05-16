@@ -22,3 +22,15 @@ function Version({ label, note }: { label: string; note: Note }) {
           {note.checklist.map((c) => (
             <li key={c.id}>
               {c.done ? "☑" : "☐"} {c.text}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+export function ConflictsView({ conflicts, onKeepLost, onDismiss }: Props) {
+  return (
+    <main className="flex flex-col gap-4 p-4">
+      <p className="text-sm text-stone-600">
