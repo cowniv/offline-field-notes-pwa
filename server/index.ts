@@ -18,3 +18,62 @@ interface ServerConflict {
   noteId: string;
   overwritten: Note;
   at: number;
+}
+
+if (existsSync(".env")) process.loadEnvFile(".env");
+
+const DATA_FILE = fileURLToPath(new URL("./data.json", import.meta.url));
+const PORT = Number(process.env.PORT ?? 4300);
+const TOKEN = process.env.SYNC_TOKEN ?? "";
+
+let state: {
+  rev: number;
+  notes: Record<string, Stored>;
+  conflicts: ServerConflict[];
+} = {
+  rev: 0,
+  notes: {},
+  conflicts: [],
+};
+if (existsSync(DATA_FILE)) state = JSON.parse(readFileSync(DATA_FILE, "utf8"));
+const persist = () => writeFileSync(DATA_FILE, JSON.stringify(state, null, 2));
+
+function isNote(x: unknown): x is Note {
+  const n = x as Note;
+  return (
+    !!n &&
+    typeof n.id === "string" &&
+    typeof n.title === "string" &&
+    typeof n.body === "string" &&
+    typeof n.location === "string" &&
+    Array.isArray(n.checklist) &&
+    typeof n.updatedAt === "number" &&
+    typeof n.deleted === "boolean"
+  );
+}
+
+const app = express();
+app.use(cors());
+app.use(express.json({ limit: "1mb" }));
+
+app.use("/api", (req, res, next) => {
+  if (TOKEN && req.header("x-sync-token") !== TOKEN) {
+    res.status(401).json({ error: "bad sync token" });
+    return;
+  }
+  next();
+});
+
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true, rev: state.rev });
+});
+
+app.post("/api/sync/push", (req, res) => {
+  const changes = req.body?.changes;
+  if (!Array.isArray(changes) || changes.length > 500) {
+    res
+      .status(400)
+      .json({ error: "changes must be an array of up to 500 items" });
+    return;
+  }
+  const results = [];
