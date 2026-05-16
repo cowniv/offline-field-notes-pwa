@@ -97,3 +97,22 @@ app.post("/api/sync/push", (req, res) => {
     }
     results.push(out.result);
   }
+  persist();
+  res.json({ results });
+});
+
+app.get("/api/sync/pull", (req, res) => {
+  const since = Number(req.query.since ?? 0) || 0;
+  const notes = Object.values(state.notes)
+    .filter((s) => s.rev > since)
+    .map((s) => s.note);
+  res.json({ notes, cursor: state.rev });
+});
+
+app.get("/api/conflicts", (_req, res) => {
+  res.json({ conflicts: state.conflicts.slice(-100) });
+});
+
+app.listen(PORT, () => {
+  console.log(`sync server on http://localhost:${PORT}`);
+});
