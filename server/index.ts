@@ -77,3 +77,23 @@ app.post("/api/sync/push", (req, res) => {
     return;
   }
   const results = [];
+  for (const c of changes) {
+    if (!isNote(c?.note) || typeof c.baseSyncedAt !== "number") {
+      res.status(400).json({ error: "invalid change" });
+      return;
+    }
+    const existing = state.notes[c.note.id]?.note;
+    const out = applyPush(existing, c.note, c.baseSyncedAt);
+    if (out.result.status === "accepted") {
+      state.rev += 1;
+      state.notes[c.note.id] = { note: c.note, rev: state.rev };
+    }
+    if (out.overwritten) {
+      state.conflicts.push({
+        noteId: c.note.id,
+        overwritten: out.overwritten,
+        at: Date.now(),
+      });
+    }
+    results.push(out.result);
+  }
