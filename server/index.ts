@@ -57,3 +57,23 @@ app.use(cors());
 app.use(express.json({ limit: "1mb" }));
 
 app.use("/api", (req, res, next) => {
+  if (TOKEN && req.header("x-sync-token") !== TOKEN) {
+    res.status(401).json({ error: "bad sync token" });
+    return;
+  }
+  next();
+});
+
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true, rev: state.rev });
+});
+
+app.post("/api/sync/push", (req, res) => {
+  const changes = req.body?.changes;
+  if (!Array.isArray(changes) || changes.length > 500) {
+    res
+      .status(400)
+      .json({ error: "changes must be an array of up to 500 items" });
+    return;
+  }
+  const results = [];
