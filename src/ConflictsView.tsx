@@ -34,3 +34,15 @@ export function ConflictsView({ conflicts, onKeepLost, onDismiss }: Props) {
   return (
     <main className="flex flex-col gap-4 p-4">
       <p className="text-sm text-stone-600">
+        When two devices edit the same note while apart, the newest edit wins.
+        The older edit is kept here so nothing is lost silently.
+      </p>
+      {conflicts.length === 0 && (
+        <p className="text-sm text-stone-500">No conflicts. 🎉</p>
+      )}
+      {conflicts.map((c) => (
+        <article
+          key={c.id}
+          className="flex flex-col gap-3 rounded-xl border border-stone-200 bg-white p-4"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row">
