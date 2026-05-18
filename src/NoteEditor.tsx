@@ -160,3 +160,35 @@ export function NoteEditor({ note, onSave }: Props) {
           {draft.photo && (
             <button
               type="button"
+              className="btn btn-ghost"
+              onClick={() => set("photo", undefined)}
+            >
+              Remove photo
+            </button>
+          )}
+        </div>
+        <p className="text-xs text-stone-500">
+          Photos stay on this device and are not uploaded.
+        </p>
+      </div>
+
+      <div className="flex gap-2 border-t border-stone-100 pt-4">
+        <button className="btn btn-primary" type="submit">
+          Save
+        </button>
+        {note.syncedAt > 0 || note.title ? (
+          <button
+            type="button"
+            className="btn btn-ghost ml-auto text-red-700"
+            onClick={() =>
+              confirm("Delete this note?") &&
+              onSave({ ...draft, deleted: true })
+            }
+          >
+            Delete
+          </button>
+        ) : null}
+      </div>
+    </form>
+  );
+}
