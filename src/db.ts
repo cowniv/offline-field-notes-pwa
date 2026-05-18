@@ -40,3 +40,17 @@ export async function saveLocalEdit(note: LocalNote) {
   await tx.objectStore("notes").put(note);
   await tx.objectStore("outbox").add({ noteId: note.id, queuedAt: Date.now() });
   await tx.done;
+}
+
+export async function putNote(note: LocalNote) {
+  await (await getDB()).put("notes", note);
+}
+
+export async function listOutbox() {
+  return (await getDB()).getAll("outbox");
+}
+
+export async function clearOutboxFor(noteIds: string[]) {
+  const db = await getDB();
+  const tx = db.transaction("outbox", "readwrite");
+  let cursor = await tx.store.openCursor();
