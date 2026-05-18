@@ -44,3 +44,12 @@ export function toCSV(notes: LocalNote[]): string {
     n.body,
     n.checklist.filter((c) => c.done).length,
     n.checklist.length,
+    new Date(n.updatedAt).toISOString(),
+    !!n.photo,
+  ]);
+  return [header, ...rows].map((r) => r.map(csvCell).join(",")).join("\r\n");
+}
+
+export function exportCSV(notes: LocalNote[]) {
+  download(`field-notes-${stamp()}.csv`, "text/csv", toCSV(notes));
+}
