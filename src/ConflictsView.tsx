@@ -58,3 +58,15 @@ export function ConflictsView({ conflicts, onKeepLost, onDismiss }: Props) {
               Restore replaced version
             </button>
             <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => onDismiss(c)}
+            >
+              Keep current
+            </button>
+          </div>
+        </article>
+      ))}
+    </main>
+  );
+}
