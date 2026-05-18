@@ -26,3 +26,17 @@ export function getDB() {
 export async function listNotes(): Promise<LocalNote[]> {
   const db = await getDB();
   const all = await db.getAllFromIndex("notes", "byUpdated");
+  return all.filter((n) => !n.deleted).reverse();
+}
+
+export async function getNote(id: string) {
+  return (await getDB()).get("notes", id);
+}
+
+/** Save a local edit and queue it for sync in one transaction. */
+export async function saveLocalEdit(note: LocalNote) {
+  const db = await getDB();
+  const tx = db.transaction(["notes", "outbox"], "readwrite");
+  await tx.objectStore("notes").put(note);
+  await tx.objectStore("outbox").add({ noteId: note.id, queuedAt: Date.now() });
+  await tx.done;
