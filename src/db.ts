@@ -12,3 +12,17 @@ let dbPromise: Promise<IDBPDatabase<FieldNotesDB>> | null = null;
 
 export function getDB() {
   dbPromise ??= openDB<FieldNotesDB>("field-notes", 1, {
+    upgrade(db) {
+      const notes = db.createObjectStore("notes", { keyPath: "id" });
+      notes.createIndex("byUpdated", "updatedAt");
+      db.createObjectStore("outbox", { keyPath: "seq", autoIncrement: true });
+      db.createObjectStore("conflicts", { keyPath: "id" });
+      db.createObjectStore("meta");
+    },
+  });
+  return dbPromise;
+}
+
+export async function listNotes(): Promise<LocalNote[]> {
+  const db = await getDB();
+  const all = await db.getAllFromIndex("notes", "byUpdated");
