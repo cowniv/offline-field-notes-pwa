@@ -54,3 +54,17 @@ export async function clearOutboxFor(noteIds: string[]) {
   const db = await getDB();
   const tx = db.transaction("outbox", "readwrite");
   let cursor = await tx.store.openCursor();
+  while (cursor) {
+    if (noteIds.includes(cursor.value.noteId)) await cursor.delete();
+    cursor = await cursor.continue();
+  }
+  await tx.done;
+}
+
+export async function addConflict(c: Conflict) {
+  await (await getDB()).put("conflicts", c);
+}
+
+export async function listConflicts() {
+  const all = await (await getDB()).getAll("conflicts");
+  return all.sort((a, b) => b.detectedAt - a.detectedAt);
