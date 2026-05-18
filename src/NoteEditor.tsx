@@ -128,3 +128,35 @@ export function NoteEditor({ note, onSave }: Props) {
               if (e.key === "Enter") {
                 e.preventDefault();
                 addItem();
+              }
+            }}
+          />
+          <button type="button" className="btn btn-ghost" onClick={addItem}>
+            Add
+          </button>
+        </div>
+      </fieldset>
+
+      <div className="flex flex-col gap-2">
+        <span className="text-sm font-medium">Photo</span>
+        {photoUrl && (
+          <img
+            src={photoUrl}
+            alt="Attached to this note"
+            className="max-h-64 w-fit rounded-lg object-contain"
+          />
+        )}
+        <div className="flex gap-2">
+          <label className="btn btn-ghost cursor-pointer">
+            {draft.photo ? "Replace photo" : "Attach photo"}
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="sr-only"
+              onChange={(e) => onPhoto(e.target.files?.[0])}
+            />
+          </label>
+          {draft.photo && (
+            <button
+              type="button"
