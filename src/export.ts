@@ -35,3 +35,12 @@ export function toCSV(notes: LocalNote[]): string {
     "checklist_done",
     "checklist_total",
     "updated_at",
+    "has_photo",
+  ];
+  const rows = notes.map((n) => [
+    n.id,
+    n.title,
+    n.location,
+    n.body,
+    n.checklist.filter((c) => c.done).length,
+    n.checklist.length,
