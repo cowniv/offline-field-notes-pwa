@@ -26,3 +26,12 @@ export function csvCell(value: string | number | boolean): string {
   return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
+export function toCSV(notes: LocalNote[]): string {
+  const header = [
+    "id",
+    "title",
+    "location",
+    "body",
+    "checklist_done",
+    "checklist_total",
+    "updated_at",
