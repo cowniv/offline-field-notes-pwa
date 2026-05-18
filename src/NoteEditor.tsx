@@ -95,3 +95,36 @@ export function NoteEditor({ note, onSave }: Props) {
                   ),
                 )
               }
+            />
+            <label
+              htmlFor={item.id}
+              className={item.done ? "text-stone-400 line-through" : ""}
+            >
+              {item.text}
+            </label>
+            <button
+              type="button"
+              aria-label={`Remove ${item.text}`}
+              className="ml-auto text-stone-400 hover:text-red-600"
+              onClick={() =>
+                set(
+                  "checklist",
+                  draft.checklist.filter((c) => c.id !== item.id),
+                )
+              }
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+        <div className="flex gap-2">
+          <input
+            className="input"
+            placeholder="Add an item"
+            aria-label="New checklist item"
+            value={newItem}
+            onChange={(e) => setNewItem(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addItem();
