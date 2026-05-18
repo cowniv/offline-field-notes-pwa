@@ -17,3 +17,12 @@ export function exportJSON(notes: LocalNote[]) {
   download(
     `field-notes-${stamp()}.json`,
     "application/json",
+    JSON.stringify(data, null, 2),
+  );
+}
+
+export function csvCell(value: string | number | boolean): string {
+  const s = String(value);
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
