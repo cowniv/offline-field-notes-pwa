@@ -68,3 +68,16 @@ export async function addConflict(c: Conflict) {
 export async function listConflicts() {
   const all = await (await getDB()).getAll("conflicts");
   return all.sort((a, b) => b.detectedAt - a.detectedAt);
+}
+
+export async function removeConflict(id: string) {
+  await (await getDB()).delete("conflicts", id);
+}
+
+export async function getCursor() {
+  return (await (await getDB()).get("meta", "pullCursor")) ?? 0;
+}
+
+export async function setCursor(value: number) {
+  await (await getDB()).put("meta", value, "pullCursor");
+}
