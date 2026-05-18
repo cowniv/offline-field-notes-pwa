@@ -63,3 +63,35 @@ export function NoteEditor({ note, onSave }: Props) {
       <label className="flex flex-col gap-1 text-sm font-medium">
         Location
         <input
+          className="input"
+          placeholder="e.g. Brgy. 412, Sampaloc"
+          value={draft.location}
+          onChange={(e) => set("location", e.target.value)}
+        />
+      </label>
+      <label className="flex flex-col gap-1 text-sm font-medium">
+        Notes
+        <textarea
+          className="input min-h-32"
+          value={draft.body}
+          onChange={(e) => set("body", e.target.value)}
+        />
+      </label>
+
+      <fieldset className="flex flex-col gap-2">
+        <legend className="mb-1 text-sm font-medium">Checklist</legend>
+        {draft.checklist.map((item) => (
+          <div key={item.id} className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              id={item.id}
+              checked={item.done}
+              className="size-4 accent-forest"
+              onChange={(e) =>
+                set(
+                  "checklist",
+                  draft.checklist.map((c) =>
+                    c.id === item.id ? { ...c, done: e.target.checked } : c,
+                  ),
+                )
+              }
