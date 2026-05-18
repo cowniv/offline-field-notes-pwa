@@ -46,3 +46,15 @@ export function ConflictsView({ conflicts, onKeepLost, onDismiss }: Props) {
           className="flex flex-col gap-3 rounded-xl border border-stone-200 bg-white p-4"
         >
           <div className="flex flex-col gap-3 sm:flex-row">
+            <Version label="Kept" note={c.kept} />
+            <Version label="Replaced" note={c.lost} />
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => onKeepLost(c)}
+            >
+              Restore replaced version
+            </button>
+            <button
