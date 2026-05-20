@@ -53,3 +53,22 @@ export function applyPush(
     result: { noteId: incoming.id, status: "rejected", current: existing },
     overwritten: concurrent ? incoming : undefined,
   };
+}
+
+export interface LocalMergeOutcome<T extends Note> {
+  /** what to store locally */
+  next: T;
+  /** set when a local unsynced edit lost to the remote one */
+  lostLocal?: Note;
+}
+
+/**
+ * Client side: fold a note pulled from the server into the local copy.
+ * `hasPending` means the local copy has edits still waiting in the outbox.
+ */
+export function mergeRemote<T extends Note & { syncedAt: number }>(
+  local: T | undefined,
+  remote: Note,
+  hasPending: boolean,
+  makeLocal: (n: Note) => T,
+): LocalMergeOutcome<T> {
