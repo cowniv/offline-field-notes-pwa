@@ -17,3 +17,21 @@ export function sameContent(a: Note, b: Note): boolean {
     a.deleted === b.deleted &&
     JSON.stringify(a.checklist) === JSON.stringify(b.checklist)
   );
+}
+
+export interface ServerPushOutcome {
+  result: PushResult;
+  /** set when two different edits collided and one was overwritten */
+  overwritten?: Note;
+}
+
+/**
+ * Server side: apply one incoming note against what the server has.
+ * `baseSyncedAt` is the server version the client last saw. If the server
+ * copy moved on since then, the two edits were concurrent.
+ */
+export function applyPush(
+  existing: Note | undefined,
+  incoming: Note,
+  baseSyncedAt: number,
+): ServerPushOutcome {
