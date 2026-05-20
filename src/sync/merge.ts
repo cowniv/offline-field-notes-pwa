@@ -35,3 +35,21 @@ export function applyPush(
   incoming: Note,
   baseSyncedAt: number,
 ): ServerPushOutcome {
+  if (!existing) {
+    return {
+      result: { noteId: incoming.id, status: "accepted", current: incoming },
+    };
+  }
+  const concurrent =
+    existing.updatedAt > baseSyncedAt && !sameContent(existing, incoming);
+  const winner = pickWinner(existing, incoming);
+  if (winner === incoming) {
+    return {
+      result: { noteId: incoming.id, status: "accepted", current: incoming },
+      overwritten: concurrent ? existing : undefined,
+    };
+  }
+  return {
+    result: { noteId: incoming.id, status: "rejected", current: existing },
+    overwritten: concurrent ? incoming : undefined,
+  };
