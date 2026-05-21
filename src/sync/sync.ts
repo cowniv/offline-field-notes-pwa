@@ -16,3 +16,20 @@ if (token) headers["x-sync-token"] = token;
 
 export interface SyncReport {
   pushed: number;
+  pulled: number;
+  conflicts: number;
+}
+
+const toLocal = (n: Note): LocalNote => ({ ...n, syncedAt: n.updatedAt });
+
+/**
+ * One sync round: push the outbox, then pull everything that changed on the
+ * server since our cursor. IndexedDB stays the source of truth; the server is
+ * just a meeting point between devices.
+ */
+export async function syncOnce(): Promise<SyncReport> {
+  const report: SyncReport = { pushed: 0, pulled: 0, conflicts: 0 };
+
+  // 1. push
+  const outbox = await listOutbox();
+  const ids = dedupeOutbox(outbox);
