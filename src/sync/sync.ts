@@ -33,3 +33,20 @@ export async function syncOnce(): Promise<SyncReport> {
   // 1. push
   const outbox = await listOutbox();
   const ids = dedupeOutbox(outbox);
+  const payload: { note: Note; baseSyncedAt: number }[] = [];
+  for (const id of ids) {
+    const n = await getNote(id);
+    if (n) payload.push({ note: stripLocal(n), baseSyncedAt: n.syncedAt });
+  }
+  if (payload.length) {
+    const res = await fetch("/api/sync/push", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ changes: payload }),
+    });
+    if (!res.ok) throw new Error(`push failed (${res.status})`);
+    const { results } = (await res.json()) as { results: PushResult[] };
+    for (const r of results) {
+      const local = await getNote(r.noteId);
+      if (!local) continue;
+      if (r.status === "rejected") {
