@@ -72,3 +72,39 @@ export function mergeRemote<T extends Note & { syncedAt: number }>(
   hasPending: boolean,
   makeLocal: (n: Note) => T,
 ): LocalMergeOutcome<T> {
+  if (!local) return { next: makeLocal({ ...remote }) };
+  if (!hasPending) {
+    return { next: { ...local, ...remote, syncedAt: remote.updatedAt } };
+  }
+  const winner = pickWinner(local, remote);
+  if (winner === local) {
+    // keep the local edit; it will be pushed and win on the server too
+    return { next: { ...local, syncedAt: remote.updatedAt } };
+  }
+  return {
+    next: { ...local, ...remote, syncedAt: remote.updatedAt },
+    lostLocal: sameContent(local, remote) ? undefined : stripLocal(local),
+  };
+}
+
+export function stripLocal(
+  n: Note & { syncedAt?: number; photo?: Blob },
+): Note {
+  const { id, title, body, location, checklist, updatedAt, deleted } = n;
+  return { id, title, body, location, checklist, updatedAt, deleted };
+}
+
+/** Collapse an outbox so each note is pushed once, in first-queued order. */
+export function dedupeOutbox<E extends { noteId: string; queuedAt: number }>(
+  entries: E[],
+): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const e of [...entries].sort((a, b) => a.queuedAt - b.queuedAt)) {
+    if (!seen.has(e.noteId)) {
+      seen.add(e.noteId);
+      out.push(e.noteId);
+    }
+  }
+  return out;
+}
