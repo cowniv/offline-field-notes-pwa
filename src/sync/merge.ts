@@ -72,3 +72,21 @@ export function mergeRemote<T extends Note & { syncedAt: number }>(
   hasPending: boolean,
   makeLocal: (n: Note) => T,
 ): LocalMergeOutcome<T> {
+  if (!local) return { next: makeLocal({ ...remote }) };
+  if (!hasPending) {
+    return { next: { ...local, ...remote, syncedAt: remote.updatedAt } };
+  }
+  const winner = pickWinner(local, remote);
+  if (winner === local) {
+    // keep the local edit; it will be pushed and win on the server too
+    return { next: { ...local, syncedAt: remote.updatedAt } };
+  }
+  return {
+    next: { ...local, ...remote, syncedAt: remote.updatedAt },
+    lostLocal: sameContent(local, remote) ? undefined : stripLocal(local),
+  };
+}
+
+export function stripLocal(
+  n: Note & { syncedAt?: number; photo?: Blob },
+): Note {
