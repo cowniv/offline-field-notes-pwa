@@ -22,3 +22,11 @@ export interface LocalNote extends Note {
   photo?: Blob;
 }
 
+export interface OutboxEntry {
+  seq?: number;
+  noteId: string;
+  queuedAt: number;
+}
+
+export interface Conflict {
+  id: string;
