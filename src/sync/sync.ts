@@ -67,3 +67,20 @@ export async function syncOnce(): Promise<SyncReport> {
       } else {
         await putNote({ ...local, syncedAt: r.current.updatedAt });
       }
+    }
+    await clearOutboxFor(ids);
+    report.pushed = results.length;
+  }
+
+  // 2. pull
+  const cursor = await getCursor();
+  const res = await fetch(`/api/sync/pull?since=${cursor}`, { headers });
+  if (!res.ok) throw new Error(`pull failed (${res.status})`);
+  const { notes, cursor: next } = (await res.json()) as {
+    notes: Note[];
+    cursor: number;
+  };
+  const pending = new Set(dedupeOutbox(await listOutbox()));
+  for (const remote of notes) {
+    const local = await getNote(remote.id);
+    const out = mergeRemote(local, remote, pending.has(remote.id), toLocal);
