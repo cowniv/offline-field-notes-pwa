@@ -14,3 +14,11 @@ export interface Note {
   /** epoch ms of the last local edit; drives last-write-wins */
   updatedAt: number;
   deleted: boolean;
+}
+
+export interface LocalNote extends Note {
+  /** updatedAt of the version we last saw from the server (0 = never synced) */
+  syncedAt: number;
+  photo?: Blob;
+}
+
