@@ -30,3 +30,11 @@ export interface OutboxEntry {
 
 export interface Conflict {
   id: string;
+  noteId: string;
+  /** the version that lost last-write-wins and was replaced */
+  lost: Note;
+  /** the version that is now stored */
+  kept: Note;
+  detectedAt: number;
+  side: "client" | "server";
+}
