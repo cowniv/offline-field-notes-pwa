@@ -84,3 +84,20 @@ export async function syncOnce(): Promise<SyncReport> {
   for (const remote of notes) {
     const local = await getNote(remote.id);
     const out = mergeRemote(local, remote, pending.has(remote.id), toLocal);
+    await putNote(out.next);
+    if (out.lostLocal) {
+      await addConflict({
+        id: crypto.randomUUID(),
+        noteId: remote.id,
+        lost: out.lostLocal,
+        kept: remote,
+        detectedAt: Date.now(),
+        side: "client",
+      });
+      report.conflicts++;
+    }
+  }
+  await setCursor(next);
+  report.pulled = notes.length;
+  return report;
+}
