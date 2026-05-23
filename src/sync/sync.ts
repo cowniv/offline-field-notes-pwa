@@ -50,3 +50,20 @@ export async function syncOnce(): Promise<SyncReport> {
       const local = await getNote(r.noteId);
       if (!local) continue;
       if (r.status === "rejected") {
+        await addConflict({
+          id: crypto.randomUUID(),
+          noteId: r.noteId,
+          lost: stripLocal(local),
+          kept: r.current,
+          detectedAt: Date.now(),
+          side: "server",
+        });
+        report.conflicts++;
+        await putNote({
+          ...local,
+          ...r.current,
+          syncedAt: r.current.updatedAt,
+        });
+      } else {
+        await putNote({ ...local, syncedAt: r.current.updatedAt });
+      }
