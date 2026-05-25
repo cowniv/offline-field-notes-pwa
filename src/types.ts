@@ -22,3 +22,26 @@ export interface LocalNote extends Note {
   photo?: Blob;
 }
 
+export interface OutboxEntry {
+  seq?: number;
+  noteId: string;
+  queuedAt: number;
+}
+
+export interface Conflict {
+  id: string;
+  noteId: string;
+  /** the version that lost last-write-wins and was replaced */
+  lost: Note;
+  /** the version that is now stored */
+  kept: Note;
+  detectedAt: number;
+  side: "client" | "server";
+}
+
+export interface PushResult {
+  noteId: string;
+  status: "accepted" | "rejected";
+  /** the server's current copy after the push */
+  current: Note;
+}
