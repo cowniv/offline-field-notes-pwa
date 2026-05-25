@@ -11,3 +11,6 @@ export function useOnline() {
       window.removeEventListener("online", on);
       window.removeEventListener("offline", off);
     };
+  }, []);
+  return online;
+}
