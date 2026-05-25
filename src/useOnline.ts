@@ -5,3 +5,6 @@ export function useOnline() {
   useEffect(() => {
     const on = () => setOnline(true);
     const off = () => setOnline(false);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => {
