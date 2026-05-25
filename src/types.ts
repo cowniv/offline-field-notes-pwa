@@ -38,3 +38,10 @@ export interface Conflict {
   detectedAt: number;
   side: "client" | "server";
 }
+
+export interface PushResult {
+  noteId: string;
+  status: "accepted" | "rejected";
+  /** the server's current copy after the push */
+  current: Note;
+}
