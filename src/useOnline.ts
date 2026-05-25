@@ -8,3 +8,6 @@ export function useOnline() {
     window.addEventListener("online", on);
     window.addEventListener("offline", off);
     return () => {
+      window.removeEventListener("online", on);
+      window.removeEventListener("offline", off);
+    };
