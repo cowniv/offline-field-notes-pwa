@@ -3,3 +3,7 @@
 @theme {
   --color-forest: #14532d;
   --color-forest-light: #dcfce7;
+  --color-paper: #f7f7f2;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
