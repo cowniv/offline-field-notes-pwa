@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #14532d;
+  --color-forest-light: #dcfce7;
