@@ -82,3 +82,24 @@ describe("mergeRemote (client)", () => {
     expect(out.lostLocal).toBeUndefined();
   });
 
+  it("keeps a newer pending local edit", () => {
+    const local: L = {
+      ...v({ title: "Mine", updatedAt: 5000 }),
+      syncedAt: 1000,
+    };
+    const out = mergeRemote<L>(
+      local,
+      v({ title: "Theirs", updatedAt: 2000 }),
+      true,
+      toLocal,
+    );
+    expect(out.next.title).toBe("Mine");
+    expect(out.next.syncedAt).toBe(2000);
+  });
+
+  it("replaces an older pending edit and keeps it as a conflict", () => {
+    const local: L = {
+      ...v({ title: "Mine", updatedAt: 1500 }),
+      syncedAt: 1000,
+    };
+    const out = mergeRemote<L>(
