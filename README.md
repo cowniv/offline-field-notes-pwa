@@ -18,3 +18,9 @@ This is the student-sized version of that idea: an installable web app for commu
 - Unit tests for the merge and outbox logic with **Vitest**
 
 ### Tech
+Vite · React 18 · TypeScript · Tailwind CSS v4 · first-party service worker · idb · Express · Vitest · Biome
+
+### Run
+```bash
+npm install
+cp .env.example .env     # optional, sets the sync token
