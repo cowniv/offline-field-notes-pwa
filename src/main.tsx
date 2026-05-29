@@ -8,3 +8,12 @@ if ("serviceWorker" in navigator && import.meta.env.PROD) {
     void navigator.serviceWorker.register("/sw.js");
   });
 }
+
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Missing root element");
+
+createRoot(rootElement).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
