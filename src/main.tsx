@@ -11,3 +11,6 @@ if ("serviceWorker" in navigator && import.meta.env.PROD) {
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Missing root element");
+
+createRoot(rootElement).render(
+  <StrictMode>
