@@ -103,3 +103,23 @@ describe("mergeRemote (client)", () => {
       syncedAt: 1000,
     };
     const out = mergeRemote<L>(
+      local,
+      v({ title: "Theirs", updatedAt: 2000 }),
+      true,
+      toLocal,
+    );
+    expect(out.next.title).toBe("Theirs");
+    expect(out.lostLocal?.title).toBe("Mine");
+  });
+});
+
+describe("dedupeOutbox", () => {
+  it("pushes each note once, oldest first", () => {
+    const ids = dedupeOutbox([
+      { noteId: "b", queuedAt: 3 },
+      { noteId: "a", queuedAt: 1 },
+      { noteId: "b", queuedAt: 2 },
+    ]);
+    expect(ids).toEqual(["a", "b"]);
+  });
+});
