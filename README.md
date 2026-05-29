@@ -11,3 +11,10 @@ This is the student-sized version of that idea: an installable web app for commu
 - Notes with title, location, free text and a checklist, all stored in **IndexedDB** (`idb`)
 - **Outbox queue**: every save is written to the note store and the outbox in one transaction, then pushed when online (on reconnect, every 30 s, or with the sync button)
 - Pull with a server cursor (`rev`), so a device only downloads what changed
+- **Last-write-wins** using `updatedAt`, with a **Conflicts** view that shows the kept and the replaced version side by side and lets you restore the replaced one
+- Online/offline indicator and a "waiting to sync" counter
+- Photo attachment stored as a **Blob** in IndexedDB (stays on the device)
+- Export to **JSON** or **CSV**
+- Unit tests for the merge and outbox logic with **Vitest**
+
+### Tech
