@@ -61,3 +61,24 @@ describe("applyPush (server)", () => {
   it("does not flag identical concurrent edits", () => {
     const server = v({ body: "same", updatedAt: 2000 });
     const out = applyPush(server, v({ body: "same", updatedAt: 2500 }), 1000);
+    expect(out.overwritten).toBeUndefined();
+  });
+});
+
+describe("mergeRemote (client)", () => {
+  it("inserts unknown notes", () => {
+    const out = mergeRemote<L>(undefined, base, false, toLocal);
+    expect(out.next.syncedAt).toBe(1000);
+  });
+
+  it("overwrites clean local copies", () => {
+    const out = mergeRemote<L>(
+      toLocal(base),
+      v({ title: "New", updatedAt: 2000 }),
+      false,
+      toLocal,
+    );
+    expect(out.next.title).toBe("New");
+    expect(out.lostLocal).toBeUndefined();
+  });
+
