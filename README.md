@@ -24,3 +24,10 @@ Vite · React 18 · TypeScript · Tailwind CSS v4 · first-party service worker 
 ```bash
 npm install
 cp .env.example .env     # optional, sets the sync token
+npm run server           # sync server on :4300
+npm run dev              # app on :5173, proxies /api to the server
+npm test                 # merge/sync tests
+```
+To try the offline flow: open DevTools → Network → Offline, add a few notes, then go back online and watch the counter drop. The service worker only runs in the production build, so use `npm run build && npm run preview` to test installing.
+
+### What I practiced
