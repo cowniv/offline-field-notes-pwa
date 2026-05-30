@@ -31,3 +31,9 @@ npm test                 # merge/sync tests
 To try the offline flow: open DevTools → Network → Offline, add a few notes, then go back online and watch the counter drop. The service worker only runs in the production build, so use `npm run build && npm run preview` to test installing.
 
 ### What I practiced
+- Designing for offline first instead of treating it as an error state
+- IndexedDB object stores, indexes and multi-store transactions
+- An outbox pattern and cursor-based pull sync
+- Conflict handling with last-write-wins, and keeping the losing edit visible instead of throwing it away
+- Keeping the merge rules as pure functions so the client, the server and the tests all share them
+- Service workers, web app manifests and what "installable" actually needs
